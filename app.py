@@ -8,8 +8,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import streamlit as st
+import io
 import tensorflow as tf
-from PIL import Image
+from PIL import Image, ImageOps, ImageCms
 
 
 st.set_page_config(
@@ -383,6 +384,19 @@ def main():
 
     try:
         input_image = Image.open(uploaded_file)
+        
+        # Convert color profile to sRGB if it exists (e.g., Display P3 from iPhones)
+        icc = input_image.info.get('icc_profile')
+        if icc:
+            try:
+                io_handle = io.BytesIO(icc)
+                src_profile = ImageCms.ImageCmsProfile(io_handle)
+                dst_profile = ImageCms.createProfile('sRGB')
+                input_image = ImageCms.profileToProfile(input_image, src_profile, dst_profile)
+            except Exception:
+                pass
+                
+        input_image = ImageOps.exif_transpose(input_image)
         display_image, preprocessed_image = preprocess_uploaded_image(input_image, preprocessing_config)
         probs, pred_idx, pred_code, pred_name = predict_image(preprocessed_image)
     except Exception as exc:
