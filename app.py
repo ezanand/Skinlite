@@ -14,7 +14,7 @@ from PIL import Image, ImageOps, ImageCms
 
 
 st.set_page_config(
-    page_title="HAM10000 Skin Lesion Demo",
+    page_title="Skinlite",
     layout="wide",
 )
 
