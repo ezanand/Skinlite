@@ -1,0 +1,23 @@
+{
+  "image_size": 224,
+  "normalization_mean": [
+    0.48500001430511475,
+    0.4560000002384186,
+    0.4059999883174896
+  ],
+  "normalization_std": [
+    0.2290000021457672,
+    0.2240000069141388,
+    0.22499999403953552
+  ],
+  "clahe": {
+    "clip_limit": 2.0,
+    "tile_grid_size": [
+      8,
+      8
+    ]
+  },
+  "mask_directory": null,
+  "num_classes": 7,
+  "run_dir": "/content/drive/MyDrive/skinlite_outputs/efficientnet_b0_training_false"
+}
