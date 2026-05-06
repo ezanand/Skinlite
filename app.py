@@ -477,7 +477,7 @@ def main():
 
     st.markdown("---")
     st.markdown(
-        "This demo is inference-only. It does not change the trained model, dataset split, or preprocessing recipe from the notebook."
+        ""
     )
 
 
