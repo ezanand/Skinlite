@@ -98,7 +98,8 @@ def render_hero():
     st.markdown(
         """
         <div class="hero-card">
-          <div class="hero-title">HAM10000 Skin Lesion Classifier</div>
+          <div class="hero-title">Skinlite AI</div>
+          <div style="color: #666; font-size: 1.1rem; margin-bottom: 0.5rem;">Dermatoscopic Image Classifier</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -340,18 +341,9 @@ def main():
     render_hero()
 
     with st.sidebar:
-        st.header("Artifacts")
-        st.write("Model search order:")
-        for model_path in MODEL_CANDIDATES:
-            st.write(f"- `{model_path.relative_to(BASE_DIR)}`")
-        st.caption(f"Classes: `{CLASS_NAMES_PATH.relative_to(BASE_DIR)}`")
-        st.caption(f"Preprocessing: `{PREPROCESSING_CONFIG_PATH.relative_to(BASE_DIR)}`")
+        st.warning("⚠️ **Disclaimer:** Skinlite is for educational and demonstrative purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a dermatologist for skin concerns.")
+        st.markdown("---")
         show_gradcam = st.toggle("Show Grad-CAM explanation", value=True)
-
-    # open_card()
-    # st.subheader("Runtime Check")
-    # # render_artifact_status()
-    # close_card()
 
     try:
         _, class_names, display_names, preprocessing_config, model_path = load_artifacts()
@@ -366,16 +358,12 @@ def main():
         )
         return
 
-    open_card()
     st.markdown('<div class="status-pill">Model Ready</div>', unsafe_allow_html=True)
-    st.success(f"Loaded model: `{model_path.relative_to(BASE_DIR)}`")
-    render_metrics_summary()
-    close_card()
 
     uploaded_file = st.file_uploader(
         "Upload a dermatoscopic image",
         type=["jpg", "jpeg", "png"],
-        help="The app applies the same CLAHE + resize + normalization pipeline used in your notebook.",
+        help="Upload a clear, well-lit photo of a skin lesion. For best results, center the mole or mark in the frame.",
     )
 
     if uploaded_file is None:
@@ -401,6 +389,13 @@ def main():
         st.metric("Class code", pred_code)
     with summary_cols[2]:
         st.metric("Confidence", f"{top_confidence:.2f}%")
+        
+    if pred_code in ["mel", "bcc", "akiec"]:
+        st.error("🚨 High-risk class detected. Please consult a dermatologist immediately.")
+    elif top_confidence < 70.0:
+        st.warning("⚠️ Low confidence prediction. Ensure the image is clear and centered.")
+    elif pred_code in ["nv", "bkl", "df", "vasc"]:
+        st.success("✅ Prediction suggests a typically benign class, but always consult a doctor if you notice changes.")
 
     left_col, right_col = st.columns([1.05, 1.15], gap="medium")
 
@@ -475,6 +470,7 @@ def main():
                 ]
             )
         )
+        render_metrics_summary()
 
     st.markdown("---")
     st.markdown(
